@@ -219,7 +219,20 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
             messagebox.showinfo("Result", result)
         else:
             z, x = result
-            messagebox.showinfo("Result", f"Optimal Value (z): {z}\nOptimal Solution (x): {x}")
+            result_root = tk.Tk()
+            result_root.title("Result")
+            setwindow(result_root,400,400) # replase root.geometry("600x400") to set window in center
+            tk.Label(result_root, text=f"Result:\nOptimal Value (z): {z}\nOptimal Solution (x): {x}", font=("Arial", 12)).pack(pady=20)
+            def program_loop(choice):
+                result_root.destroy()
+                if choice:
+                    main()
+                else:
+                    exit()
+            tk.Button(result_root, text="Solve Another", command=lambda: program_loop(True)).pack(pady=20)
+            tk.Button(result_root, text="Exit", command=lambda: program_loop(False)).pack(pady=20)
+            result_root.mainloop()
+            
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
