@@ -96,7 +96,8 @@ def standardize_problem():
     print("Subject to:")
     for i in range(A.shape[0]):
         print(" + ".join(f"{A[i, j]}*x{j+1}" for j in range(A.shape[1])), "=", b[i])
-    print("x >= 0\n")
+    for i in range(A.shape[1]):
+        print(f"x{i+1} >= 0")
     
     return c, A, b
 
