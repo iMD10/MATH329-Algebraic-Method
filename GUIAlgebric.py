@@ -3,14 +3,18 @@ from itertools import combinations
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+# constrints_str to use on the Result window
+constrints_str = None # to be changed in standardize_problem(c, A, b, inequalities, unrestricted_indices)
+
 def standardize_problem(c, A, b, inequalities, unrestricted_indices):
     """
     Converts the problem into standard form.
     Handles unrestricted variables.
     Returns the coefficients of the objective function, the constraint matrix, and the RHS vector.
     """
+    global constrints_str
     num_variables = len(c)
-
+    optimization_type = "Max" # needs to be changed if Min is added
     # Transform unrestricted variables
     new_c = []
     for i in range(num_variables):
@@ -50,6 +54,14 @@ def standardize_problem(c, A, b, inequalities, unrestricted_indices):
     slack_matrix = np.eye(num_slack)
     A = np.hstack((A, slack_matrix))
     c = np.append(c, np.zeros(num_slack))  # Add zero coefficients for slack variables
+    #-------------------------------------------------------------------------------
+    # update constrints_str to use on the Result window
+    constrints_str = "\nConverted to standard form:\n"+optimization_type+"imize z = " + " + ".join(f"{coef}*x{i+1}" for i, coef in enumerate(c))+"\nSubject to:\n"
+    for i in range(A.shape[0]):
+        constrints_str += " + ".join(f"{A[i, j]}*x{j+1}" for j in range(A.shape[1])) + " = " + str(b[i]) + "\n"
+    for i in range(A.shape[1]):
+        constrints_str += f"x{i+1} >= 0\n"
+    print(constrints_str)
 
     return c, A, b
 
@@ -224,7 +236,9 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
         result_root = tk.Tk()
         result_root.title("Result")
         setwindow(result_root,400,400) # replase root.geometry("600x400") to set window in center
+        tk.Label(result_root, text="Solution:\n\n"+constrints_str, font=("Arial", 10)).pack(pady=20)
         tk.Label(result_root, text="Result:\n\n"+msg, font=("Arial", 12)).pack(pady=20)
+
         def program_loop(choice):
             result_root.destroy()
             if choice:
