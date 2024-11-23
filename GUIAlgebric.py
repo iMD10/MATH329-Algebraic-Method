@@ -7,62 +7,53 @@ from tkinter import messagebox, ttk
 constrints_str = None # to be changed in standardize_problem(c, A, b, inequalities, unrestricted_indices)
 
 def standardize_problem(c, A, b, inequalities, unrestricted_indices):
-    """
-    Converts the problem into standard form.
-    Handles unrestricted variables.
-    Returns the coefficients of the objective function, the constraint matrix, and the RHS vector.
-    """
-    global constrints_str
-    global opt_type
     num_variables = len(c)
-    # Transform unrestricted variables
     new_c = []
     for i in range(num_variables):
         if i in unrestricted_indices:
-            new_c.append(c[i])   # Coefficient for xi+
-            new_c.append(-c[i])  # Coefficient for xi-
+            new_c.append(c[i])
+            new_c.append(-c[i])
         else:
             new_c.append(c[i])
     c = np.array(new_c, dtype=float)
 
-    # Transform the constraint matrix for unrestricted variables
     A_transformed = []
     for row in A:
         new_row = []
         for i, coef in enumerate(row):
             if i in unrestricted_indices:
-                new_row.append(coef)  # Coefficient for xi+
-                new_row.append(-coef)  # Coefficient for xi-
+                new_row.append(coef)
+                new_row.append(-coef)
             else:
                 new_row.append(coef)
         A_transformed.append(new_row)
     A = np.array(A_transformed, dtype=float)
     b = np.array(b, dtype=float)
 
-    # Handle inequalities
+    new_A = []
+    new_b = []
     for i, inequality in enumerate(inequalities):
         if inequality == ">=":
-            A[i] *= -1
-            b[i] *= -1
+            new_A.append(-A[i])
+            new_b.append(-b[i])
         elif inequality == "=":
-            # Split equality into two inequalities
-            A = np.vstack((A, -A[i]))
-            b = np.append(b, -b[i])
-    
-    # Add slack variables for all <= constraints
+            new_A.append(A[i])
+            new_b.append(b[i])
+            new_A.append(-A[i])
+            new_b.append(-b[i])
+        else:
+            new_A.append(A[i])
+            new_b.append(b[i])
+    A = np.array(new_A, dtype=float)
+    b = np.array(new_b, dtype=float)
+
     num_slack = len(b)
     slack_matrix = np.eye(num_slack)
     A = np.hstack((A, slack_matrix))
-    c = np.append(c, np.zeros(num_slack))  # Add zero coefficients for slack variables
-    #-------------------------------------------------------------------------------
-    # update constrints_str to use on the Result window
-    constrints_str = "\nConverted to standard form:\n"+opt_type+"imize z = " + " + ".join(f"{coef}*x{i+1}" for i, coef in enumerate(c))+"\nSubject to:\n"
-    for i in range(A.shape[0]):
-        constrints_str += " + ".join(f"{A[i, j]}*x{j+1}" for j in range(A.shape[1])) + " = " + str(b[i]) + "\n"
-    for i in range(A.shape[1]):
-        constrints_str += f"x{i+1} >= 0\n"
+    c = np.append(c, np.zeros(num_slack))
 
     return c, A, b
+
 
 
 def solve_linear_program_algebraic(c, A, b):
@@ -212,30 +203,26 @@ def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
 
     tk.Button(coef_root, text="Solve", command=next_to_constraints).pack(pady=20)
     coef_root.mainloop()
-
 def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestricted_vars):
     try:
-        global opt_type  # Use the global variable set in the GUI
-        # Flip objective coefficients if the user selected minimization
+        global opt_type
         if opt_type == "min":
             obj_coefs = [-coef for coef in obj_coefs]
 
-        # Standardize problem
         c, A, b = standardize_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestricted_vars)
-
-        # Solve the problem
         result = solve_linear_program_algebraic(c, A, b)
         if isinstance(result, str):
             msg = result
         else:
             z, x = result
-            msg = f"Optimal Value (z): \n{z}\n\nOptimal Solution (x): \n{x.tolist()}"
+            if opt_type == "min":
+                z = -z  # Convert back to the original minimization result
+            msg = f"Optimal Value (z): {z}\nOptimal Solution (x): {x.tolist()}"
 
         result_root = tk.Tk()
         result_root.title("Result")
-        setwindow(result_root, 400, 400)  # Center the window
-        tk.Label(result_root, text="Solution:\n\n" + constrints_str, font=("Arial", 10)).pack(pady=20)
-        tk.Label(result_root, text="Result:\n\n" + msg, font=("Arial", 12)).pack(pady=20)
+        setwindow(result_root, 400, 200)
+        tk.Label(result_root, text=msg, font=("Arial", 12)).pack(pady=20)
 
         def program_loop(choice):
             result_root.destroy()
@@ -244,8 +231,8 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
             else:
                 exit()
 
-        tk.Button(result_root, text="Solve Another", command=lambda: program_loop(True)).pack(pady=20)
-        tk.Button(result_root, text="Exit", command=lambda: program_loop(False)).pack(pady=20)
+        tk.Button(result_root, text="Solve Another", command=lambda: program_loop(True)).pack(pady=10)
+        tk.Button(result_root, text="Exit", command=lambda: program_loop(False)).pack(pady=10)
         result_root.mainloop()
 
     except Exception as e:
