@@ -90,9 +90,9 @@ def standardize_problem():
     slack_matrix = np.eye(num_slack)
     A = np.hstack((A, slack_matrix))
     c = np.append(c, np.zeros(num_slack))  # Add zero coefficients for slack variables
-    
+
     print("\nConverted to standard form:")
-    print("Maximize z = ", " + ".join(f"{coef}*x{i+1}" for i, coef in enumerate(c)))
+    print(optimization_type+"imize z = ", " + ".join(f"{coef}*x{i+1}" for i, coef in enumerate(c)))
     print("Subject to:")
     for i in range(A.shape[0]):
         print(" + ".join(f"{A[i, j]}*x{j+1}" for j in range(A.shape[1])), "=", b[i])
