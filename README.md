@@ -45,7 +45,7 @@ The project is part of the MATH329 coursework and uses NumPy to handle matrix op
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/iMD_10/MATH329-Algebraic-Method.git
+   git clone https://github.com/iMD10/MATH329-Algebraic-Method.git
    cd MATH329-Algebraic-Method
    ```
 
