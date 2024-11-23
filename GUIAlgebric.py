@@ -61,7 +61,6 @@ def standardize_problem(c, A, b, inequalities, unrestricted_indices):
         constrints_str += " + ".join(f"{A[i, j]}*x{j+1}" for j in range(A.shape[1])) + " = " + str(b[i]) + "\n"
     for i in range(A.shape[1]):
         constrints_str += f"x{i+1} >= 0\n"
-    print(constrints_str)
 
     return c, A, b
 
