@@ -13,8 +13,8 @@ def standardize_problem(c, A, b, inequalities, unrestricted_indices):
     Returns the coefficients of the objective function, the constraint matrix, and the RHS vector.
     """
     global constrints_str
+    global opt_type
     num_variables = len(c)
-    optimization_type = "Max" # needs to be changed if Min is added
     # Transform unrestricted variables
     new_c = []
     for i in range(num_variables):
@@ -56,7 +56,7 @@ def standardize_problem(c, A, b, inequalities, unrestricted_indices):
     c = np.append(c, np.zeros(num_slack))  # Add zero coefficients for slack variables
     #-------------------------------------------------------------------------------
     # update constrints_str to use on the Result window
-    constrints_str = "\nConverted to standard form:\n"+optimization_type+"imize z = " + " + ".join(f"{coef}*x{i+1}" for i, coef in enumerate(c))+"\nSubject to:\n"
+    constrints_str = "\nConverted to standard form:\n"+opt_type+"imize z = " + " + ".join(f"{coef}*x{i+1}" for i, coef in enumerate(c))+"\nSubject to:\n"
     for i in range(A.shape[0]):
         constrints_str += " + ".join(f"{A[i, j]}*x{j+1}" for j in range(A.shape[1])) + " = " + str(b[i]) + "\n"
     for i in range(A.shape[1]):
