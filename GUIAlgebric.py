@@ -213,11 +213,10 @@ def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
     tk.Button(coef_root, text="Solve", command=next_to_constraints).pack(pady=20)
     coef_root.mainloop()
 
-
 def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestricted_vars):
     try:
-        # Flip objective coefficients if necessary
-        opt_type = "max"  # Default optimization type for now
+        global opt_type  # Use the global variable set in the GUI
+        # Flip objective coefficients if the user selected minimization
         if opt_type == "min":
             obj_coefs = [-coef for coef in obj_coefs]
 
@@ -231,12 +230,12 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
         else:
             z, x = result
             msg = f"Optimal Value (z): \n{z}\n\nOptimal Solution (x): \n{x.tolist()}"
-        
+
         result_root = tk.Tk()
         result_root.title("Result")
-        setwindow(result_root,400,400) # replase root.geometry("600x400") to set window in center
-        tk.Label(result_root, text="Solution:\n\n"+constrints_str, font=("Arial", 10)).pack(pady=20)
-        tk.Label(result_root, text="Result:\n\n"+msg, font=("Arial", 12)).pack(pady=20)
+        setwindow(result_root, 400, 400)  # Center the window
+        tk.Label(result_root, text="Solution:\n\n" + constrints_str, font=("Arial", 10)).pack(pady=20)
+        tk.Label(result_root, text="Result:\n\n" + msg, font=("Arial", 12)).pack(pady=20)
 
         def program_loop(choice):
             result_root.destroy()
@@ -244,10 +243,11 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
                 main()
             else:
                 exit()
+
         tk.Button(result_root, text="Solve Another", command=lambda: program_loop(True)).pack(pady=20)
         tk.Button(result_root, text="Exit", command=lambda: program_loop(False)).pack(pady=20)
         result_root.mainloop()
-            
+
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
@@ -256,10 +256,12 @@ def gui_solver():
     # Start with the main input page
     root = tk.Tk()
     root.title("Linear Programming Solver - Define Problem")
-    setwindow(root,600,400) # replase root.geometry("600x400") to set window in center
+    setwindow(root, 600, 400)  # Center the window
 
     def next_to_variable_selection():
         try:
+            global opt_type
+            opt_type = opt_type_var.get()
             num_vars = int(num_vars_entry.get())
             num_constraints = int(num_constraints_entry.get())
             if num_vars <= 0 or num_constraints <= 0:
@@ -271,6 +273,16 @@ def gui_solver():
 
     # Main page to define number of variables and constraints
     tk.Label(root, text="Define Your Linear Programming Problem", font=("Arial", 16)).pack(pady=10)
+
+    # Select Max or Min
+    tk.Label(root, text="Is this a maximization or minimization problem?").pack(pady=5)
+    opt_type_var = tk.StringVar(value="max")  # Default is max
+    max_button = tk.Radiobutton(root, text="Maximization", variable=opt_type_var, value="max")
+    max_button.pack()
+    min_button = tk.Radiobutton(root, text="Minimization", variable=opt_type_var, value="min")
+    min_button.pack()
+
+    # Input number of variables and constraints
     tk.Label(root, text="Enter the number of variables:").pack(pady=5)
     num_vars_entry = tk.Entry(root, width=10)
     num_vars_entry.pack()
@@ -281,7 +293,6 @@ def gui_solver():
 
     tk.Button(root, text="Next", command=next_to_variable_selection).pack(pady=20)
     root.mainloop()
-
 
 # Main Program
 def main():
