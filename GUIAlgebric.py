@@ -3,8 +3,7 @@ from itertools import combinations
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-# constrints_str to use on the Result window
-constrints_str = None # to be changed in standardize_problem(c, A, b, inequalities, unrestricted_indices)
+constrints_str = None
 
 def standardize_problem(c, A, b, inequalities, unrestricted_indices):
     num_variables = len(c)
@@ -54,14 +53,7 @@ def standardize_problem(c, A, b, inequalities, unrestricted_indices):
 
     return c, A, b
 
-
-
 def solve_linear_program_algebraic(c, A, b):
-    """
-    Solve a linear programming problem using the algebraic method.
-    Maximize z = c^T * x
-    Subject to Ax = b, x >= 0
-    """
     num_variables = A.shape[1]
     num_constraints = A.shape[0]
 
@@ -94,21 +86,17 @@ def solve_linear_program_algebraic(c, A, b):
     
     return optimal_value, optimal_solution
 
-def setwindow(tkobj,w,h):
-    ws = tkobj.winfo_screenwidth() # width of the screen
-    hs = tkobj.winfo_screenheight() # height of the screen
-    # get screen width and height
-    # calculate x and y coordinates for the Tk root window
+def setwindow(tkobj, w, h):
+    ws = tkobj.winfo_screenwidth()
+    hs = tkobj.winfo_screenheight()
     x = (ws/2) - (w/2)
     y = (hs/2) - (h/2)
-    # set the dimensions of the screen 
-    # and where it is placed
     tkobj.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 def variable_selection_page(num_vars, num_constraints):
     var_select_root = tk.Tk()
     var_select_root.title("Select Unrestricted Variables")
-    setwindow(var_select_root,600,400) # replase var_select_root.geometry("600x400") to set window in center
+    setwindow(var_select_root, 600, 400)
 
     unrestricted_vars = []
 
@@ -128,11 +116,10 @@ def variable_selection_page(num_vars, num_constraints):
     tk.Button(var_select_root, text="Continue", command=finish_selection).pack(pady=20)
     var_select_root.mainloop()
 
-
 def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
     coef_root = tk.Tk()
     coef_root.title("Enter Coefficients")
-    setwindow(coef_root,800,600) # replase coef_root.geometry("800x600") to set window in center
+    setwindow(coef_root, 800, 600)
 
     obj_coefs = []
     constraint_coefs = []
@@ -141,18 +128,15 @@ def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
 
     def next_to_constraints():
         try:
-            # Collect objective function coefficients
             for i, entry in enumerate(obj_entries):
                 obj_coefs.append(float(entry.get()))
 
-            # Collect constraint coefficients
             for i in range(num_constraints):
                 constraint_row = []
                 for j in range(num_vars):
                     constraint_row.append(float(constraint_entries[i][j].get()))
                 constraint_coefs.append(constraint_row)
 
-                # Collect inequalities and RHS
                 inequalities.append(ineq_entries[i].get())
                 rhs_values.append(float(rhs_entries[i].get()))
 
@@ -161,7 +145,6 @@ def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    # Objective Function Inputs
     tk.Label(coef_root, text="Objective Function Coefficients", font=("Arial", 16)).pack(pady=10)
     obj_entries = []
     for i in range(num_vars):
@@ -172,7 +155,6 @@ def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
         entry.pack(side="left")
         obj_entries.append(entry)
 
-    # Constraints Inputs
     tk.Label(coef_root, text="Constraints", font=("Arial", 16)).pack(pady=10)
     constraint_entries = []
     rhs_entries = []
@@ -203,6 +185,7 @@ def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
 
     tk.Button(coef_root, text="Solve", command=next_to_constraints).pack(pady=20)
     coef_root.mainloop()
+
 def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestricted_vars):
     try:
         global opt_type
@@ -216,7 +199,7 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
         else:
             z, x = result
             if opt_type == "min":
-                z = -z  # Convert back to the original minimization result
+                z = -z
             msg = f"Optimal Value (z): {z}\nOptimal Solution (x): {x.tolist()}"
 
         result_root = tk.Tk()
@@ -238,12 +221,10 @@ def solve_problem(obj_coefs, constraint_coefs, rhs_values, inequalities, unrestr
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
-
 def gui_solver():
-    # Start with the main input page
     root = tk.Tk()
     root.title("Linear Programming Solver - Define Problem")
-    setwindow(root, 600, 400)  # Center the window
+    setwindow(root, 600, 400)
 
     def next_to_variable_selection():
         try:
@@ -258,18 +239,14 @@ def gui_solver():
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    # Main page to define number of variables and constraints
     tk.Label(root, text="Define Your Linear Programming Problem", font=("Arial", 16)).pack(pady=10)
-
-    # Select Max or Min
     tk.Label(root, text="Is this a maximization or minimization problem?").pack(pady=5)
-    opt_type_var = tk.StringVar(value="max")  # Default is max
+    opt_type_var = tk.StringVar(value="max")
     max_button = tk.Radiobutton(root, text="Maximization", variable=opt_type_var, value="max")
     max_button.pack()
     min_button = tk.Radiobutton(root, text="Minimization", variable=opt_type_var, value="min")
     min_button.pack()
 
-    # Input number of variables and constraints
     tk.Label(root, text="Enter the number of variables:").pack(pady=5)
     num_vars_entry = tk.Entry(root, width=10)
     num_vars_entry.pack()
@@ -281,24 +258,19 @@ def gui_solver():
     tk.Button(root, text="Next", command=next_to_variable_selection).pack(pady=20)
     root.mainloop()
 
-# Main Program
 def main():
-    # Main Menu
     root = tk.Tk()
     root.title("Linear Programming Solver")
-    setwindow(root,400,300) # replase root.geometry() to set window in center
+    setwindow(root, 400, 300)
 
     def start_solver():
         root.destroy()
         gui_solver()
 
-    # Main Menu UI
     tk.Label(root, text="Welcome to Linear Programming Solver!", font=("Arial", 16)).pack(pady=20)
     tk.Button(root, text="Start Solver", font=("Arial", 14), command=start_solver, width=20).pack(pady=10)
     tk.Button(root, text="Exit", font=("Arial", 14), command=root.destroy, width=20).pack(pady=10)
-
     root.mainloop()
-
 
 if __name__ == "__main__":
     main()
