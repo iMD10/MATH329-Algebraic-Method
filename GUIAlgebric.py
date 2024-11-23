@@ -91,10 +91,22 @@ def solve_linear_program_algebraic(c, A, b):
         return "No feasible solution exists."
     
     return optimal_value, optimal_solution
+
+def setwindow(tkobj,w,h):
+    ws = tkobj.winfo_screenwidth() # width of the screen
+    hs = tkobj.winfo_screenheight() # height of the screen
+    # get screen width and height
+    # calculate x and y coordinates for the Tk root window
+    x = (ws/2) - (w/2)
+    y = (hs/2) - (h/2)
+    # set the dimensions of the screen 
+    # and where it is placed
+    tkobj.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
 def variable_selection_page(num_vars, num_constraints):
     var_select_root = tk.Tk()
     var_select_root.title("Select Unrestricted Variables")
-    var_select_root.geometry("600x400")
+    setwindow(var_select_root,600,400) # replase var_select_root.geometry("600x400") to set window in center
 
     unrestricted_vars = []
 
@@ -118,7 +130,7 @@ def variable_selection_page(num_vars, num_constraints):
 def coefficient_input_page(num_vars, num_constraints, unrestricted_vars):
     coef_root = tk.Tk()
     coef_root.title("Enter Coefficients")
-    coef_root.geometry("800x600")
+    setwindow(coef_root,800,600) # replase coef_root.geometry("800x600") to set window in center
 
     obj_coefs = []
     constraint_coefs = []
@@ -216,7 +228,7 @@ def gui_solver():
     # Start with the main input page
     root = tk.Tk()
     root.title("Linear Programming Solver - Define Problem")
-    root.geometry("600x400")
+    setwindow(root,600,400) # replase root.geometry("600x400") to set window in center
 
     def next_to_variable_selection():
         try:
@@ -248,7 +260,7 @@ def main():
     # Main Menu
     root = tk.Tk()
     root.title("Linear Programming Solver")
-    root.geometry("400x300")
+    setwindow(root,400,300) # replase root.geometry() to set window in center
 
     def start_solver():
         root.destroy()
