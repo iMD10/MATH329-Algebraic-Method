@@ -118,6 +118,12 @@ There is no additional configuration required. Ensure Python 3.x and the require
 - **Mohammed Mansour**  
   GitHub: [@MrM3ROF](https://github.com/MrM3ROF)
 
+- **Eyad Fahad**  
+  GitHub: [@commando-xxt](https://github.com/commando-xxt)
+
+- **Ammer Mohammed**  
+  GitHub: [@3wex](https://github.com/3wex)
+
 ---
 
 Feel free to open issues or contribute to the project to make it better. Enjoy solving LPPs with ease!
