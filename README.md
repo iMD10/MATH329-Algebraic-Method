@@ -110,7 +110,7 @@ There is no additional configuration required. Ensure Python 3.x and the require
 ## Contributors
 
 - **Muhannad Majed**  
-  GitHub: [@iMD_10](https://github.com/iMD_10)
+  GitHub: [@iMD10](https://github.com/iMD10)
 
 - **Mohammed Saleh**  
   GitHub: [@rayq-q](https://github.com/rayq-q)
