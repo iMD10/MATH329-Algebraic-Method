@@ -121,7 +121,7 @@ There is no additional configuration required. Ensure Python 3.x and the require
 - **Eyad Fahad**  
   GitHub: [@commando-xxt](https://github.com/commando-xxt)
 
-- **Ammer Mohammed**  
+- **Amer Mohammed**  
   GitHub: [@3wex](https://github.com/3wex)
 
 ---
